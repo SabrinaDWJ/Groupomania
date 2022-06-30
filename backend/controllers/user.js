@@ -49,5 +49,6 @@ exports.login = async (req, res) => {
 
 // Logout à un compte utilisateur
 exports.logout = async (req, res) => {
-
+    res.clearCookie("jwt");
+    res.redirect("/");
 }
