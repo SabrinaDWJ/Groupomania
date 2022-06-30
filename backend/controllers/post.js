@@ -5,7 +5,7 @@ const post = require('../models/post');
 // Ajout d'un post
 exports.createPost = async (req, res) => {
     try {
-        const postObject = JSON.parse(req.body.sauce);
+        const postObject = JSON.parse(req.body.post);
         delete postObject._id;
         let post = new post({
             postId: postObject.userId,
