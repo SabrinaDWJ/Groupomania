@@ -1,12 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const user = require('../models/user');
+const User = require('../models/User');
 
 // Création d'un compte utilisateur 
 exports.signup = async (req, res) => {
     try {
         let hash = await bcrypt.hash(req.body.password, 10)
-        const user = await new user({
+        const user = await new User({
             name: req.body.nom,
             email: req.body.email,
             password: hash
@@ -24,7 +24,7 @@ exports.signup = async (req, res) => {
 // Connexion à un compte utilisateur
 exports.login = async (req, res) => {
     try {
-        let user = await user.findOne({ email: req.body.email })
+        let user = await User.findOne({ email: req.body.email })
         if (!user) {
             return res.status(404).json({ error: 'Utilisateur non trouvé !' });
         }

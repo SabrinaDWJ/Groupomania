@@ -1,5 +1,5 @@
 // Création des actions pour le modèle "post"
-const post = require('../models/post');
+const Post = require('../models/Post');
 
 
 // Ajout d'un post
@@ -26,7 +26,7 @@ exports.createPost = async (req, res) => {
 // Récupération des informations de tous les posts
 exports.getAllPosts = async (req, res) => {
     try {
-        let post = await post.find();
+        let post = await Post.find();
         return res.status(200).json(post);
     }
     catch (err) {
@@ -40,11 +40,11 @@ exports.modifyPost = async (req, res) => {
     try {
         let postObject = req.body;
         if (req.file) {
-            let post = await post.findOne({ _id: req.params.id });
+            let post = await Post.findOne({ _id: req.params.id });
             await fs.unlink(`images/${post.picture.split('/images/')[1]}`);
             postObject.picture = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
         }
-        await post.updateOne({ _id: req.params.id }, {
+        await Post.updateOne({ _id: req.params.id }, {
             postId: postObject.userId,
             message: postObject.message,
         });
@@ -59,7 +59,7 @@ exports.modifyPost = async (req, res) => {
 // Suppression d'un post 
 exports.deletePost = async (req, res) => {
     try {
-        let post = await post.findOne({ _id: req.params.id })
+        let post = await Post.findOne({ _id: req.params.id })
         const filename = post.picture.split("/images/")[1];
         await fs.unlink(`images/${filename}`)
         await post.deleteOne({ _id: req.params.id });
@@ -74,7 +74,7 @@ exports.deletePost = async (req, res) => {
 
 exports.likePost = async (req, res) => {
     try {
-        let post = await post.findOne({ _id: req.params.id });
+        let post = await Post.findOne({ _id: req.params.id });
         if (!post) {
             throw res.status(404).json({ message: 'Post introuvable !' });
         }
