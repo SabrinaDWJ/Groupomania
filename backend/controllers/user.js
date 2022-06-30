@@ -46,3 +46,8 @@ exports.login = async (req, res) => {
         return res.status(500).json({ message: 'Erreur interne !' });
     }
 };
+
+// Logout à un compte utilisateur
+exports.logout = async (req, res) => {
+
+}
