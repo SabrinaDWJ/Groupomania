@@ -6,8 +6,9 @@ const User = require('../models/User');
 exports.signup = async (req, res) => {
     try {
         let hash = await bcrypt.hash(req.body.password, 10)
-        const user = await new User({
-            name: req.body.nom,
+        const user = new User({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
             email: req.body.email,
             password: hash
         });
@@ -47,8 +48,18 @@ exports.login = async (req, res) => {
     }
 };
 
-// Logout à un compte utilisateur
-exports.logout = async (req, res) => {
-    res.clearCookie("jwt");
-    res.redirect("/");
-}
+// Récupération des informations d'un seul utilisateur
+exports.userInfo = async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: req.params.id });
+        if (!user) {
+            return res.status(404).json({ message: 'User non trouvée !' });
+        }
+        return res.status(200).json(user)
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(500).send("Internal error");
+    }
+
+};

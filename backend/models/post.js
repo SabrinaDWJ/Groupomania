@@ -6,7 +6,9 @@ const postSchema = mongoose.Schema({
   picture: { type: String, },
   likes: { type: [String], required: true, },
   usersLiked: { type: Array, default: [] },
-},
+  created: { type: Date, required: true },
+  createdBy: { type: String, required: true }
+}
 );
 
 

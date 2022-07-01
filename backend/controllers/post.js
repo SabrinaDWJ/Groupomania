@@ -5,14 +5,16 @@ const Post = require('../models/Post');
 // Ajout d'un post
 exports.createPost = async (req, res) => {
     try {
-        const postObject = JSON.parse(req.body.post);
+        const postObject = JSON.parse(req.body);
         delete postObject._id;
-        let post = new post({
-            postId: postObject.userId,
+        let post = new Post({
+            postId: postObject.postId,
             message: postObject.message,
             picture: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+            created: postObject.created,
+            createdBy: postObject.createdBy,
             likes: 0,
-            comments: 0,
+            usersLiked: []
         });
         await post.save();
         return res.status(201).json({ message: "Post enregistrée !" })
@@ -45,7 +47,7 @@ exports.modifyPost = async (req, res) => {
             postObject.picture = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
         }
         await Post.updateOne({ _id: req.params.id }, {
-            postId: postObject.userId,
+            postId: postObject.postId,
             message: postObject.message,
         });
         return res.status(200).json({ message: 'Post modifiée !' });
@@ -92,8 +94,21 @@ exports.likePost = async (req, res) => {
                     )
                 }
                 break;
+            // Si le client annule son choix 
+            case 0:
+                if (post.usersLiked.includes(req.body.userId)) {
+                    // mise à jour de la sauce
+                    await Post.updateOne(
+                        { _id: req.params.id },
+                        {
+                            $inc: { likes: -1 },
+                            $pull: { usersLiked: req.body.userId }
+                        }
+                    )
+                }
+                break;
         }
-        return res.status(200).json({ message: 'Like ou Dislike mis à jour !' });
+        return res.status(200).json({ message: 'Like mis à jour !' });
     }
     catch (error) {
         console.error(error);
